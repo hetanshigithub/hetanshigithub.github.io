@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Hetanshi Shah: software, data and AI projects, with live demos.">
+<title>Hetanshi Shah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400..900;125,400..900&family=Public+Sans:wght@400;500;600&family=Martian+Mono:wght@400;500&display=swap">
+<style>
+/* Layout concept: a delivery log. The hero is a live claim test; work, history and contact follow as ruled rows. */
+:root{
+  --bg:#EDF0F4; --surface:#FFFFFF; --surface-2:#E3E8EF; --ink:#0F1B2D; --muted:#55627A; --line:#C7D0DC;
+  --accent:#2B44FF; --on-accent:#FFFFFF; --good:#17803D; --bad:#C62828; --cell:#D5DCE6;
+  --display:'Archivo','Arial Narrow',Arial,sans-serif; --body:'Public Sans',system-ui,-apple-system,'Segoe UI',sans-serif; --mono:'Martian Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A111D; --surface:#111B2B; --surface-2:#172338; --ink:#E8EDF5; --muted:#93A1B8; --line:#24324A;
+    --accent:#8DA0FF; --on-accent:#0A111D; --good:#4CCB7E; --bad:#FF7A7A; --cell:#1C2A42; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0A111D; --surface:#111B2B; --surface-2:#172338; --ink:#E8EDF5; --muted:#93A1B8; --line:#24324A;
+  --accent:#8DA0FF; --on-accent:#0A111D; --good:#4CCB7E; --bad:#FF7A7A; --cell:#1C2A42; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;
+  padding-block:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
+.wrap{max-width:1120px;margin:0 auto}
+a{color:inherit}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+
+/* top bar */
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:20px 0;border-bottom:1px solid var(--line)}
+.top b{font-family:var(--display);font-stretch:125%;font-weight:800;font-size:15px;letter-spacing:-.01em}
+.status{display:inline-flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px color-mix(in srgb,var(--good) 25%,transparent)}
+
+/* hero */
+.hero{padding:56px 0 32px}
+h1{font-family:var(--display);font-stretch:125%;font-weight:850;font-size:clamp(44px,10.5vw,132px);line-height:.92;letter-spacing:-.035em;margin:0 0 28px;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{max-width:62ch;font-size:19px;margin:0;color:var(--ink)}
+.lede span{color:var(--muted)}
+
+/* claim test */
+.test{margin-top:40px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px}
+.test-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.seg button{font:500 12px/1 var(--mono);letter-spacing:.04em;text-transform:uppercase;padding:11px 14px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.stats{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:16px}
+.stat b{display:block;font-family:var(--display);font-stretch:112%;font-weight:800;font-size:34px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat b.bad{color:var(--bad)}
+.stat b.ok{color:var(--good)}
+.grid{display:grid;grid-template-columns:repeat(20,minmax(0,1fr));gap:3px}
+.cell{aspect-ratio:1;background:var(--cell);border-radius:2px}
+.cell.work{background:transparent;outline:2px solid var(--accent);outline-offset:-2px}
+.cell.done{background:var(--accent)}
+.cell.dup{background:var(--bad)}
+.workers{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;margin-top:16px}
+.w{border:1px solid var(--line);border-radius:4px;padding:8px 6px;text-align:center;min-width:0}
+.w b{display:block;font-family:var(--display);font-stretch:112%;font-weight:800;font-size:18px;font-variant-numeric:tabular-nums;line-height:1.1}
+.w span{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.04em}
+.run{margin-top:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.btn{font:600 14px/1 var(--body);padding:13px 18px;border-radius:4px;border:1px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.note{font-size:13px;color:var(--muted);margin:14px 0 0;max-width:80ch}
+
+/* sections */
+section{padding:56px 0 8px}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;border-bottom:1px solid var(--ink);padding-bottom:12px;margin-bottom:0}
+h2{font-family:var(--display);font-stretch:125%;font-weight:800;font-size:clamp(26px,4.2vw,40px);letter-spacing:-.02em;line-height:1.05;margin:0}
+.row{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:8px 40px;padding:28px 0;border-bottom:1px solid var(--line)}
+.row h3{font-family:var(--display);font-stretch:112%;font-weight:750;font-size:24px;letter-spacing:-.015em;line-height:1.15;margin:0 0 8px}
+.row .meta{margin:0}
+.row p{margin:0 0 12px;max-width:68ch}
+.row p:last-child{margin-bottom:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;padding:0;list-style:none}
+.chips li{font:500 11px/1 var(--mono);letter-spacing:.03em;padding:6px 8px;border:1px solid var(--line);border-radius:3px;color:var(--muted)}
+.links{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px}
+.links a{font-weight:600;font-size:14px;text-decoration:none;border-bottom:2px solid var(--accent);padding-bottom:2px}
+.links a:hover{background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.live{display:inline-block;font:500 10px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 6px;border-radius:3px;background:var(--good);color:var(--bg);margin-left:8px;vertical-align:middle}
+.feature h3{font-size:clamp(28px,4vw,38px)}
+
+
+/* retry + ab demos */
+.tool{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px}
+.tool .ctl{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin:10px 0}
+.tool button{font:600 13px var(--body);background:var(--ink);color:var(--bg);border:0;border-radius:4px;padding:8px 12px;cursor:pointer}
+.tool button:focus-visible,.tool input:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.tool input[type=number]{width:100%;font:500 14px var(--mono);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:8px}
+.bars{display:grid;gap:6px;margin:10px 0}
+.bar{display:grid;grid-template-columns:70px 1fr 64px;gap:10px;align-items:center;font:500 12px var(--mono)}
+.bar i{display:block;height:12px;background:var(--ink);border-radius:2px;transition:width .35s}
+.bar.dead i{background:var(--bad)}
+.abgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+.abgrid label{display:block;margin-bottom:4px}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+/* signature demo */
+.sig{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px}
+.sig label{display:block;margin-bottom:6px}
+.sig textarea{width:100%;font:500 13px/1.5 var(--mono);background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:10px;resize:vertical;min-height:70px}
+.hash{font:500 12px/1.5 var(--mono);word-break:break-all;margin:6px 0 12px}
+.verdict{font:600 13px/1.4 var(--body);padding:8px 10px;border-radius:4px;display:inline-block}
+.verdict.ok{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.verdict.bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+
+/* timeline */
+.when{font:500 12px/1.5 var(--mono);letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
+ul.plain{margin:0;padding-left:18px}
+ul.plain li{margin:0 0 8px;max-width:68ch}
+
+/* skills */
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:24px;padding:28px 0;border-bottom:1px solid var(--line)}
+.skills h3{font:500 12px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.skills p{margin:0}
+
+/* contact */
+.contact{padding:56px 0 64px}
+.contact h2{font-size:clamp(34px,7vw,84px);line-height:.95;letter-spacing:-.03em;margin-bottom:24px}
+.mail{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+.mail code{font:500 18px/1.2 var(--mono);word-break:break-all}
+.foot{border-top:1px solid var(--line);padding:18px 0 28px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+
+html{scroll-behavior:smooth}
+.skip{position:absolute;left:-9999px;top:8px;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:4px;z-index:20;font-weight:600}
+.skip:focus{left:16px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.nav{display:flex;gap:20px;flex-wrap:wrap}
+.nav a{font:500 12px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:var(--muted);padding:6px 0;border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
+.nav a:hover{color:var(--ink);border-color:var(--accent)}
+.row{transition:background-color .2s}
+.row:hover{background:color-mix(in srgb,var(--surface) 60%,transparent)}
+.btn{transition:transform .12s,opacity .12s}
+.btn:active{transform:translateY(1px)}
+.cell{transition:background-color .12s}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:28px;padding:28px 0;border-bottom:1px solid var(--line)}
+.how h3{font-family:var(--display);font-stretch:112%;font-weight:750;font-size:20px;letter-spacing:-.01em;line-height:1.2;margin:0 0 8px}
+.how p{margin:0;max-width:44ch}
+details.case{margin-top:16px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+details.case summary{cursor:pointer;padding:12px 14px;font:600 14px/1.3 var(--body);list-style:none;display:flex;justify-content:space-between;gap:12px}
+details.case summary::-webkit-details-marker{display:none}
+details.case summary::after{content:'+';font:500 16px/1 var(--mono);color:var(--accent)}
+details.case[open] summary::after{content:'\2212'}
+details.case dl{margin:0;padding:0 14px 14px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+details.case dt{font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+details.case dd{margin:0;max-width:68ch}
+.ask{padding:28px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:8px 40px}
+.qs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;padding:0;list-style:none}
+.qs button{font:500 13px/1.2 var(--body);padding:9px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);cursor:pointer;transition:border-color .15s,background-color .15s}
+.qs button:hover,.qs button[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.askform{display:flex;gap:8px;margin-bottom:16px}
+.askform input{flex:1;min-width:0;font:400 15px/1.2 var(--body);padding:12px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink)}
+.answer{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;min-height:96px}
+.answer p{margin:0 0 8px;max-width:62ch}
+.answer p:last-child{margin:0}
+@media (max-width:720px){.ask{grid-template-columns:minmax(0,1fr)}}
+
+@media (max-width:720px){
+  .row{grid-template-columns:minmax(0,1fr)}
+  .hero{padding-top:36px}
+  .stats{gap:20px}
+  .stat b{font-size:28px}
+  .test{padding:14px}
+  .grid{gap:2px}
+  .w span{display:none}
+}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+  <header class="top">
+    <b>Hetanshi Shah</b>
+    <nav class="nav" aria-label="Sections"><a href="#work">Work</a><a href="#data">Data</a><a href="#history">History</a><a href="#ask">Ask</a><a href="#contact">Contact</a></nav>
+    <span class="mono status"><i class="dot"></i>Finishing my M.S. in December 2026, open to full-time roles</span>
+  </header>
+
+  <main id="main">
+    <div class="hero">
+      <h1>None claimed <em>twice.</em></h1>
+      <p class="lede">That is the result of a test I wrote for Hookshot: eight workers, 200 deliveries, and not one delivery picked up by two of them. I'm Hetanshi, a software engineer who likes the parts of a system that have to be right. <span>Below, you can run a version of that test yourself.</span></p>
+
+      <div class="test" id="test">
+        <div class="test-head">
+          <div>
+            <div class="mono">Claim test, 8 workers, 200 deliveries</div>
+          </div>
+          <div class="seg" role="group" aria-label="Row locking">
+            <button type="button" id="lockOn" aria-pressed="true">Row locking on</button>
+            <button type="button" id="lockOff" aria-pressed="false">Row locking off</button>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><span class="mono">Claimed</span><b id="sClaimed">0</b></div>
+          <div class="stat"><span class="mono">Claimed twice</span><b id="sDup" class="ok">0</b></div>
+          <div class="stat"><span class="mono">Steps</span><b id="sTicks">0</b></div>
+        </div>
+        <div class="grid" id="grid" aria-label="200 deliveries"></div>
+        <div class="workers" id="workers"></div>
+        <div class="run">
+          <button type="button" class="btn" id="runBtn">Run it again</button>
+          <span class="mono" id="modeLabel"></span>
+        </div>
+        <p class="sr" id="srStatus" role="status" aria-live="polite"></p>
+        <p class="note">This is a small simulation in your browser. It shows the idea behind Hookshot's claim logic: each worker locks a row before taking it, so another worker skips past it. Turn locking off and workers read the same row at the same time. The real test, ConcurrentClaimTest, runs the 8 workers against PostgreSQL and runs in CI.</p>
+      </div>
+    </div>
+
+    <section id="how">
+      <div class="sec-head"><h2>How I work</h2><span class="mono">Three habits</span></div>
+      <div class="how">
+        <div><h3>Write the test that would catch it</h3><p>Before I trust a feature, I write the check that would expose the failure. Hookshot's claim test and the 37-question evaluation set for my search project both came from that habit.</p></div>
+        <div><h3>Leave a trail</h3><p>I write runbooks and notes so someone else can run what I built. At Dbmares, that meant runbooks for teammates, so they did not need to ask me.</p></div>
+        <div><h3>Say what I haven't checked</h3><p>My prompt-grading tool has not been compared with human ratings, and its page says so. I would rather you hear the limit from me.</p></div>
+      </div>
+    </section>
+
+    <section id="work">
+      <div class="sec-head"><h2>Things I built</h2><span class="mono">Code and live demos</span></div>
+
+      <article class="row feature">
+        <div>
+          <h3>Hookshot</h3>
+          <p class="mono meta">Webhook delivery service</p>
+        </div>
+        <div>
+          <p>A service that delivers webhooks and does not lose or repeat them. Workers claim deliveries with <code>FOR UPDATE SKIP LOCKED</code> and a lease, so a worker that dies does not hold a job forever. Failed deliveries retry with jittered exponential backoff and end up in a dead-letter queue. Every payload is signed with HMAC-SHA256, requests carry idempotency keys, and outgoing calls are guarded against SSRF.</p>
+          <p>I injected the clock so timing logic can be tested exactly. The claim test above runs against H2 and PostgreSQL 16 in CI, because a concurrency test that passes on the wrong database proves very little.</p>
+          <ul class="chips"><li>Java 21</li><li>Spring Boot</li><li>PostgreSQL</li><li>HMAC-SHA256</li><li>Idempotency keys</li></ul>
+          <div class="links"><a href="https://github.com/hetanshigithub/hookshot" target="_blank" rel="noopener">Code on GitHub</a></div>
+          <div class="tool" id="retry">
+            <div class="mono">Try the idea: make a delivery fail</div>
+            <div class="ctl"><label class="mono" for="maxTry">Attempts allowed</label><input id="maxTry" type="range" min="3" max="8" value="5" style="accent-color:var(--ink)"><span class="mono" id="maxTryV">5</span><button type="button" id="failBtn">Fail the next attempt</button><button type="button" id="resetBtn" style="background:transparent;color:var(--ink);border:1px solid var(--line)">Reset</button></div>
+            <div class="bars" id="bars" aria-live="polite"></div>
+            <p class="note" id="retryNote">Illustration only: each wait doubles, plus random jitter so retries do not all land at once. The numbers are examples, not Hookshot's settings.</p>
+          </div>
+          <details class="case"><summary>Case study: making sure nothing is claimed twice</summary><dl>
+            <div><dt>Problem</dt><dd>Webhook systems fail quietly. An event gets delivered twice, never delivered, or sent somewhere it should not go. Every one of those is hard to see afterward.</dd></div>
+            <div><dt>My role</dt><dd>I built it on my own: the design, the Java backend, the database layer, the tests and the CI.</dd></div>
+            <div><dt>Decisions</dt><dd>Claim rows with <code>FOR UPDATE SKIP LOCKED</code> and a lease, so a crashed worker releases its job. Retry with jittered exponential backoff, then a dead-letter queue. Sign payloads with HMAC-SHA256 and use idempotency keys. Inject the clock so timing logic can be tested exactly. Run CI on both H2 and PostgreSQL 16.</dd></div>
+            <div><dt>Result</dt><dd>ConcurrentClaimTest has 8 workers compete for 200 deliveries, and none is claimed twice. It passes on PostgreSQL 16 in CI.</dd></div>
+          </dl></details>
+
+        </div>
+      </article>
+
+      <article class="row">
+        <div>
+          <h3>Sigcheck <span class="live">Live</span></h3>
+          <p class="mono meta">Webhook signature debugger</p>
+        </div>
+        <div>
+          <p>When a webhook signature check fails, the cause is usually small: a changed byte, a different secret, a re-encoded body. Sigcheck helps a developer work out why. It has 60+ tests.</p>
+          <ul class="chips"><li>Web app</li><li>HMAC</li><li>60+ tests</li></ul>
+          <div class="links"><a href="https://sigcheck-navy.vercel.app" target="_blank" rel="noopener">Open the live tool</a><a href="https://github.com/hetanshigithub/sigcheck" target="_blank" rel="noopener">Code on GitHub</a></div>
+          <div class="sig" id="sig">
+            <div class="mono" style="margin-bottom:10px">Try the idea: edit the message</div>
+            <label class="mono" for="payload">Message</label>
+            <textarea id="payload" spellcheck="false">{"event":"delivery.created","id":"evt_104","amount":2500}</textarea>
+            <div class="mono" style="margin-top:12px">Signature that was sent</div>
+            <div class="hash" id="sent">computing…</div>
+            <div class="mono">Signature of what you see now</div>
+            <div class="hash" id="now">computing…</div>
+            <span class="verdict ok" id="verdict">Matches</span>
+            <p class="note">Computed in your browser with HMAC-SHA256 and a demo secret. Change a single character and the signatures stop matching.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="row">
+        <div>
+          <h3>Source-checked Q&amp;A <span class="live">Live</span></h3>
+          <p class="mono meta">React and TypeScript</p>
+        </div>
+        <div>
+          <p>A document question-and-answer interface that ties each statement in an answer to the source sentences behind it. It has a match-confidence meter and a retrieval inspector, so you can see why an answer was given. 56 tests.</p>
+          <ul class="chips"><li>React</li><li>TypeScript</li><li>56 tests</li></ul>
+          <div class="links"><a href="https://source-checked-qa.vercel.app" target="_blank" rel="noopener">Open the live app</a><a href="https://github.com/hetanshigithub/source-checked-qa" target="_blank" rel="noopener">Code on GitHub</a></div>
+          <details class="case"><summary>Case study: answers you can check</summary><dl>
+            <div><dt>Problem</dt><dd>When a tool answers a question about a document, you cannot tell where the answer came from or how sure it is.</dd></div>
+            <div><dt>My role</dt><dd>I designed and built the interface in React and TypeScript.</dd></div>
+            <div><dt>Decisions</dt><dd>Tie each statement in an answer to highlighted source sentences. Show a match-confidence meter. Add a retrieval inspector, so you can see what the system looked at.</dd></div>
+            <div><dt>Result</dt><dd>A live app with 56 tests.</dd></div>
+          </dl></details>
+
+        </div>
+      </article>
+
+      <article class="row">
+        <div>
+          <h3>Retrieval service</h3>
+          <p class="mono meta">Python, FAISS, FastAPI</p>
+        </div>
+        <div>
+          <p>A document search service with sentence-transformer embeddings and a FAISS index, served through FastAPI and packaged in Docker. The index rebuilds itself when the documents change, so old data cannot slip into results. A lightweight offline embedder lets tests and CI run without downloading a model.</p>
+          <p>I judged it on a 37-question evaluation set with recall@k, MRR and groundedness, and wrote 58 tests.</p>
+          <ul class="chips"><li>Python</li><li>FAISS</li><li>FastAPI</li><li>Docker</li><li>pytest</li></ul>
+          <div class="links"><a href="https://github.com/hetanshigithub/ai-research-assistant-rag" target="_blank" rel="noopener">Code on GitHub</a></div>
+          <details class="case"><summary>Case study: search that can show its work</summary><dl>
+            <div><dt>Problem</dt><dd>Document search goes wrong in two quiet ways: the index is out of date, or nobody measures whether the answers are any good.</dd></div>
+            <div><dt>My role</dt><dd>I built the whole service on my own, from ingestion to the API and the tests.</dd></div>
+            <div><dt>Decisions</dt><dd>Give the document set a fingerprint and rebuild the index when it changes. Pair the sentence-transformer model with a small offline embedder, so tests and CI run without downloading a model. Pull answers from the source text and do not generate them. Score the system on a fixed question set.</dd></div>
+            <div><dt>Result</dt><dd>A 37-question evaluation set scored with recall@k, MRR and groundedness, plus 58 automated tests across ingestion, retrieval and the API.</dd></div>
+          </dl></details>
+
+        </div>
+      </article>
+
+      <article class="row">
+        <div>
+          <h3>AI Prompt Experimentation Engine</h3>
+          <p class="mono meta">Python</p>
+        </div>
+        <div>
+          <p>Runs five prompting strategies on one task and scores each output on a weighted six-part rubric, with a model judge at temperature 0 and rule-based checks alongside it. A refinement loop rewrites the weak outputs. A mock mode runs everything without an API key, and results export to JSON.</p>
+          <p>I have not yet checked its scores against human ratings, so I treat them as a tool for comparing prompts and not as ground truth.</p>
+          <ul class="chips"><li>Python</li><li>OpenAI Responses API</li><li>5 tests</li></ul>
+          <div class="links"><a href="https://github.com/hetanshigithub/Ai-Prompt-Experimentation-Engine" target="_blank" rel="noopener">Code on GitHub</a></div>
+        </div>
+      </article>
+
+      <article class="row">
+        <div>
+          <h3>V-TALKS</h3>
+          <p class="mono meta">Android app</p>
+        </div>
+        <div>
+          <p>A guidance app for international students with step-by-step guides, interactive checklists and a deadline tracker with local reminders. I interviewed graduate students first and grouped what they told me into six themes that shaped the design.</p>
+          <p>I made the assistant rule-based on purpose. A confident wrong answer about a deadline can hurt someone, so every response reminds the student to confirm with their school's designated official. Data stays on the device.</p>
+          <ul class="chips"><li>Kotlin</li><li>Jetpack Compose</li><li>MVVM</li></ul>
+        </div>
+      </article>
+    </section>
+
+    <section id="data">
+      <div class="sec-head"><h2>Data and analytics</h2><span class="mono">Day-to-day work</span></div>
+      <article class="row">
+        <div>
+          <h3>Reporting and dashboards</h3>
+          <p class="mono meta">Marketing &amp; Data Analytics</p>
+        </div>
+        <div>
+          <div class="stats">
+            <div class="stat"><b>30%</b><span class="mono">less manual reporting time</span></div>
+            <div class="stat"><b>3,000+</b><span class="mono">monthly interactions in Power BI</span></div>
+          </div>
+          <p>As a graduate assistant I wrote Python pipelines with validation checks, so reports stopped depending on hand-copied numbers. I build Power BI dashboards on more than 3,000 monthly user interactions, and I use SQL and Python to explain why a number moved, not just that it did.</p>
+          <p>I also design A/B tests and turn the results into a recommendation people can act on, and I manage the Department of Theatre &amp; Dance website with a focus on usability, accessibility and structured content.</p>
+          <ul class="chips"><li>Power BI</li><li>SQL</li><li>Python</li><li>Google Analytics</li><li>A/B testing</li></ul>
+          <div class="tool" id="ab">
+            <div class="mono">Try the idea: was the A/B result real?</div>
+            <div class="abgrid">
+              <div><label class="mono" for="aN">A: visitors</label><input id="aN" type="number" min="1" value="2000"><label class="mono" for="aC" style="margin-top:8px">A: conversions</label><input id="aC" type="number" min="0" value="100"></div>
+              <div><label class="mono" for="bN">B: visitors</label><input id="bN" type="number" min="1" value="2000"><label class="mono" for="bC" style="margin-top:8px">B: conversions</label><input id="bC" type="number" min="0" value="126"></div>
+            </div>
+            <div id="abOut" aria-live="polite"><span class="verdict ok" id="abV"></span><p class="note" id="abT"></p></div>
+            <p class="note">A standard two-proportion z-test, run in your browser. The numbers above are made up so you can play with them.</p>
+          </div>
+        </div>
+      </article>
+      <article class="row">
+        <div>
+          <h3>Reporting systems at Dbmares</h3>
+          <p class="mono meta">Junior developer, 2023 to 2024</p>
+        </div>
+        <div>
+          <p>Before graduate school I built reporting systems in Python and SQL at Dbmares that improved reporting efficiency by 25%, and I wrote runbooks so teammates could run them without me.</p>
+        </div>
+      </article>
+    </section>
+
+    <section id="history">
+      <div class="sec-head"><h2>Where I've worked</h2><span class="mono">Newest first</span></div>
+
+      <article class="row">
+        <div>
+          <h3>Graduate Assistant, Marketing &amp; Data Analytics</h3>
+          <p class="when">Montclair State University · Aug 2025 to now</p>
+        </div>
+        <div>
+          <ul class="plain">
+            <li>Wrote Python data pipelines with validation checks that cut manual reporting time by 30%.</li>
+            <li>Build Power BI dashboards on 3,000+ monthly user interactions, using SQL and Python to explain why the numbers move.</li>
+            <li>Design A/B tests and turn the results into recommendations.</li>
+            <li>Manage the Department of Theatre &amp; Dance website, focusing on usability, accessibility and structured content.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="row">
+        <div>
+          <h3>Graduate Research Assistant, Secure Coding &amp; AI Privacy</h3>
+          <p class="when">Montclair State University · Aug 2025 to Mar 2026</p>
+        </div>
+        <div>
+          <ul class="plain">
+            <li>Tested how AI and LLM outputs fail, using structured methods to measure accuracy and consistency.</li>
+            <li>Analyzed code with SonarQube, mapped findings to CWE and CVE categories, and cut false positives.</li>
+            <li>Co-led surveys on secure coding education and wrote curriculum recommendations.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="row">
+        <div>
+          <h3>Junior Software Developer</h3>
+          <p class="when">Dbmares · Jan 2023 to Dec 2024</p>
+        </div>
+        <div>
+          <ul class="plain">
+            <li>Built backend reporting systems and APIs in Python and SQL, and ran routine data audits. Operational efficiency improved by 25%.</li>
+            <li>Added CI checks in Azure DevOps that cut release regressions by 25%.</li>
+            <li>Wrote runbooks so teammates could run and fix systems without me.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="row">
+        <div>
+          <h3>Founder, Nirvaana Naturals</h3>
+          <p class="when">Online store · Mar to Dec 2022</p>
+        </div>
+        <div>
+          <ul class="plain">
+            <li>Built and ran an e-commerce business, from the site to the customers.</li>
+            <li>Studied where shoppers dropped out of the funnel and moved ad spend toward what converted. Conversion rose 20%.</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <section id="stack">
+      <div class="sec-head"><h2>Education and tools</h2></div>
+      <article class="row">
+        <div>
+          <h3>M.S. Computer Science</h3>
+          <p class="when">Montclair State University · Dec 2026 · GPA 4.0</p>
+        </div>
+        <div>
+          <h3 style="font-size:20px">B.E. Computer Engineering</h3>
+          <p class="when">Gujarat Technological University · 2019 to Feb 2023</p>
+        </div>
+      </article>
+      <div class="skills">
+        <div><h3>Languages</h3><p>Java, Python, TypeScript, JavaScript, SQL, Kotlin</p></div>
+        <div><h3>Frameworks</h3><p>Spring Boot, React, FastAPI, Jetpack Compose</p></div>
+        <div><h3>Data</h3><p>PostgreSQL, FAISS, Power BI, Python data pipelines</p></div>
+        <div><h3>Practice</h3><p>Docker, Git, CI/CD with Azure DevOps, Linux, JUnit, pytest, SonarQube</p></div>
+      </div>
+    </section>
+
+    <section id="ask">
+      <div class="sec-head"><h2>Ask me</h2><span class="mono">Short answers</span></div>
+      <div class="ask">
+        <div>
+          <p class="mono" style="margin:20px 0 8px">How this works</p>
+          <p style="margin:0;max-width:40ch">These are short answers I wrote, and nothing here goes beyond what is on this page.</p>
+        </div>
+        <div style="padding-top:20px">
+          <ul class="qs" id="qs"></ul>
+          <form class="askform" id="askform"><label class="sr" for="askq">Type a question</label><input id="askq" type="text" placeholder="Type a question, like: what stack do you use?" autocomplete="off"><button type="submit" class="btn">Ask</button></form>
+          <div class="answer" id="answer" aria-live="polite"><p>Pick a question or type your own.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <h2>Say hello.</h2>
+      <div class="mail">
+        <code id="email">hetanshishahh@gmail.com</code>
+        <button type="button" class="btn ghost" id="copyBtn">Copy address</button>
+        <span class="mono" id="copied" aria-live="polite"></span>
+      </div>
+      <div class="links">
+        <a href="https://github.com/hetanshigithub" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/hetanshi-shah-96a10b337/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot mono"><span>Hetanshi Shah · New Jersey</span><span>Updated October 2026</span></footer>
+</div>
+
+<script>
+(function(){
+  var N=200,W=8;
+  var gridEl=document.getElementById('grid'),workersEl=document.getElementById('workers');
+  var sClaimed=document.getElementById('sClaimed'),sDup=document.getElementById('sDup'),sTicks=document.getElementById('sTicks');
+  var lockOn=document.getElementById('lockOn'),lockOff=document.getElementById('lockOff'),runBtn=document.getElementById('runBtn'),modeLabel=document.getElementById('modeLabel');
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cells=[],wEls=[],locking=true,sim=null,timer=null;
+
+  for(var i=0;i<N;i++){var c=document.createElement('div');c.className='cell';gridEl.appendChild(c);cells.push(c)}
+  for(var k=0;k<W;k++){var d=document.createElement('div');d.className='w';d.innerHTML='<b>0</b><span>W'+(k+1)+'</span>';workersEl.appendChild(d);wEls.push(d)}
+
+  function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+  function makeSim(lock,seed){
+    var r=rng(seed),state=new Array(N).fill(0),inflight={},ws=[];
+    for(var i=0;i<W;i++)ws.push({s:'idle',t:-1,wait:0,n:0});
+    var o={ticks:0,claimed:0,dup:0,done:false,state:state,inflight:inflight,ws:ws};
+    o.step=function(){
+      o.ticks++;
+      for(var i=0;i<W;i++){
+        var w=ws[i];
+        if(w.s==='idle'){
+          if(r()<0.7){
+            var t=-1,found=[];
+            for(var j=0;j<N;j++){
+              if(state[j]===0&&(!lock||!inflight[j])){found.push(j);if(lock||found.length>=14)break}
+            }
+            if(found.length)t=lock?found[0]:found[Math.floor(r()*found.length)];
+            if(t>=0){w.t=t;w.s='work';w.wait=1+Math.floor(r()*3);if(lock)inflight[t]=true}
+          }
+        }else{
+          w.wait--;
+          if(w.wait<=0){
+            if(state[w.t]===0){state[w.t]=1;o.claimed++;w.n++}
+            else if(state[w.t]===1){state[w.t]=2;o.dup++}
+            delete inflight[w.t];w.s='idle';w.t=-1
+          }
+        }
+      }
+      var free=0,busy=0;
+      for(var q=0;q<N;q++)if(state[q]===0)free++;
+      for(var p=0;p<W;p++)if(ws[p].s==='work')busy++;
+      if(free===0&&busy===0)o.done=true;
+      if(o.ticks>4000)o.done=true;
+    };
+    return o;
+  }
+
+  function paint(){
+    var marked={};
+    for(var i=0;i<W;i++){if(sim.ws[i].s==='work')marked[sim.ws[i].t]=true}
+    for(var j=0;j<N;j++){
+      var v=sim.state[j],cl='cell';
+      if(v===2)cl+=' dup';else if(v===1)cl+=' done';else if(marked[j])cl+=' work';
+      if(cells[j].className!==cl)cells[j].className=cl;
+    }
+    sClaimed.textContent=String(sim.claimed);
+    sDup.textContent=String(sim.dup);
+    sDup.className=sim.dup>0?'bad':'ok';
+    sTicks.textContent=String(sim.ticks);
+    for(var k=0;k<W;k++)wEls[k].firstChild.textContent=String(sim.ws[k].n);
+    if(sim.done){document.getElementById('srStatus').textContent='Run finished: '+sim.claimed+' deliveries claimed, '+sim.dup+' claimed twice.'}
+    modeLabel.textContent=locking?'Row locking on: workers skip rows another worker has locked':'Row locking off: workers read the same row at once';
+  }
+
+  function stop(){if(timer){clearInterval(timer);timer=null}}
+  function run(animate,seed){
+    stop();
+    sim=makeSim(locking,seed);
+    if(!animate||reduce){while(!sim.done)sim.step();paint();runBtn.disabled=false;return}
+    runBtn.disabled=true;paint();
+    timer=setInterval(function(){
+      sim.step();sim.step();paint();
+      if(sim.done){stop();runBtn.disabled=false}
+    },50);
+  }
+  function setLock(v){
+    locking=v;
+    lockOn.setAttribute('aria-pressed',v?'true':'false');
+    lockOff.setAttribute('aria-pressed',v?'false':'true');
+    run(true,Math.floor(Math.random()*1e6)+1);
+  }
+  lockOn.addEventListener('click',function(){setLock(true)});
+  lockOff.addEventListener('click',function(){setLock(false)});
+  runBtn.addEventListener('click',function(){run(true,Math.floor(Math.random()*1e6)+1)});
+  run(false,7);
+
+  /* signature demo */
+  var enc=new TextEncoder(),SECRET='demo-secret-not-real';
+  var payload=document.getElementById('payload'),sentEl=document.getElementById('sent'),nowEl=document.getElementById('now'),verdict=document.getElementById('verdict');
+  var original=payload.value,sentSig='';
+  function hmac(msg){
+    return crypto.subtle.importKey('raw',enc.encode(SECRET),{name:'HMAC',hash:'SHA-256'},false,['sign'])
+      .then(function(k){return crypto.subtle.sign('HMAC',k,enc.encode(msg))})
+      .then(function(buf){return Array.prototype.map.call(new Uint8Array(buf),function(b){return ('0'+b.toString(16)).slice(-2)}).join('')});
+  }
+  function update(){
+    hmac(payload.value).then(function(h){
+      nowEl.textContent='sha256='+h;
+      var ok=('sha256='+h)===sentSig;
+      verdict.textContent=ok?'Matches':'Does not match, so the message was changed';
+      verdict.className='verdict '+(ok?'ok':'bad');
+    });
+  }
+  try{
+    hmac(original).then(function(h){sentSig='sha256='+h;sentEl.textContent=sentSig;update()}).catch(function(){fail()});
+  }catch(e){fail()}
+  function fail(){sentEl.textContent='Your browser blocked the crypto API, so the live demo is off.';nowEl.textContent='';verdict.hidden=true}
+  payload.addEventListener('input',function(){if(sentSig)update()});
+
+
+  /* ask me */
+  var QA=[
+    {q:'What are you looking for?',k:'looking want role job seeking hire hiring position',a:['Full-time roles in software engineering, backend, full-stack and data. I finish my M.S. in Computer Science in December 2026.']},
+    {q:'When can you start?',k:'start available availability when graduate graduation',a:['After I graduate in December 2026.']},
+    {q:'What is the hardest thing you have built?',k:'hardest hard difficult complex challenging built proud',a:['Hookshot. Getting many workers to claim deliveries without ever taking the same one, and then proving it with a test that runs against PostgreSQL in CI.']},
+    {q:'What stack do you use?',k:'stack tech technologies languages tools use frameworks skills',a:['Java, Python, TypeScript, JavaScript, SQL and Kotlin. Spring Boot, React, FastAPI and Jetpack Compose. PostgreSQL, Docker, Git, and CI/CD with Azure DevOps.']},
+    {q:'Where are you based?',k:'where based live location city state',a:['New Jersey.']},
+    {q:'What have you done with data?',k:'data analytics pipelines power bi sql dashboard analyst',a:['As a graduate assistant I wrote Python pipelines with validation checks that cut manual reporting time by 30%, and I build Power BI dashboards on 3,000+ monthly user interactions.']},
+    {q:'How can I reach you?',k:'reach contact email linkedin github message',a:['Email is hetanshishahh@gmail.com. My GitHub and LinkedIn are at the bottom of the page.']}
+  ];
+  var STOP=['what','your','you','are','the','for','how','can','tell','about','have','with','this','that','does','did','who','why','when','where','its','and','any','some','them','they','will','would','could','should','from','into','which','do'];
+  var qsEl=document.getElementById('qs'),ansEl=document.getElementById('answer'),form=document.getElementById('askform'),inp=document.getElementById('askq');
+  function show(i,btn){
+    ansEl.innerHTML='';
+    QA[i].a.forEach(function(t){var p=document.createElement('p');p.textContent=t;ansEl.appendChild(p)});
+    var bs=qsEl.querySelectorAll('button');for(var b=0;b<bs.length;b++)bs[b].setAttribute('aria-pressed',bs[b]===btn?'true':'false');
+  }
+  QA.forEach(function(item,i){
+    var li=document.createElement('li'),b=document.createElement('button');
+    b.type='button';b.textContent=item.q;b.setAttribute('aria-pressed','false');
+    b.addEventListener('click',function(){show(i,b)});
+    li.appendChild(b);qsEl.appendChild(li);
+  });
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    var words=inp.value.toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(function(w){return w.length>2&&STOP.indexOf(w)<0});
+    var best=-1,score=0;
+    QA.forEach(function(item,i){
+      var keys=(item.k+' '+item.q.toLowerCase()).split(/\s+/),n=0;
+      words.forEach(function(w){if(keys.indexOf(w)>=0)n++});
+      if(n>score){score=n;best=i}
+    });
+    if(best>=0){show(best,null)}
+    else{ansEl.innerHTML='';var p=document.createElement('p');p.textContent="I don't have an answer to that written down here. The best way to ask is by email: hetanshishahh@gmail.com.";ansEl.appendChild(p)}
+  });
+
+  /* copy email */
+  var copyBtn=document.getElementById('copyBtn'),copied=document.getElementById('copied'),emailEl=document.getElementById('email');
+  copyBtn.addEventListener('click',function(){
+    var txt=emailEl.textContent;
+    function sel(){var r=document.createRange();r.selectNodeContents(emailEl);var s=window.getSelection();s.removeAllRanges();s.addRange(r);copied.textContent='Selected, press copy'}
+    try{
+      navigator.clipboard.writeText(txt).then(function(){copied.textContent='Copied'},sel);
+    }catch(e){sel()}
+  });
+})();
+
+(function(){
+  var rg=document.getElementById('maxTry');if(!rg)return;
+  var bars=document.getElementById('bars'),mv=document.getElementById('maxTryV'),note=document.getElementById('retryNote');
+  var fails=[],jit=[];
+  function rnd(){return 0.75+Math.random()*0.5}
+  function draw(){
+    var max=+rg.value;mv.textContent=max;bars.innerHTML='';
+    var top=Math.pow(2,max)*1.25*2;
+    for(var i=0;i<fails.length;i++){
+      var w=Math.min(2*Math.pow(2,i)*jit[i],top);
+      var last=(i+1>=max);
+      var d=document.createElement('div');d.className='bar'+(last?' dead':'');
+      d.innerHTML='<span>Try '+(i+1)+'</span><span><i style="width:'+Math.max(3,w/top*100)+'%"></i></span><span>'+(last?'dead':(w.toFixed(1)+'s'))+'</span>';
+      bars.appendChild(d);
+    }
+    if(!fails.length)note.textContent='Press the button. Each failure waits longer before the next try. Illustration only: the numbers are examples, not Hookshot\'s settings.';
+    else if(fails.length>=max)note.textContent='Out of attempts. The delivery moves to the dead-letter queue, where a person can look at it instead of it retrying forever.';
+    else note.textContent='Waiting before try '+(fails.length+1)+'. Each wait doubles, plus random jitter so retries do not all land at once.';
+  }
+  document.getElementById('failBtn').addEventListener('click',function(){
+    if(fails.length>=+rg.value)return;fails.push(1);jit.push(rnd());draw();
+  });
+  document.getElementById('resetBtn').addEventListener('click',function(){fails=[];jit=[];draw()});
+  rg.addEventListener('input',function(){if(fails.length>+rg.value){fails.length=+rg.value;jit.length=+rg.value}draw()});
+  draw();
+})();
+(function(){
+  var ids=['aN','aC','bN','bC'],el={};ids.forEach(function(i){el[i]=document.getElementById(i)});
+  if(!el.aN)return;
+  var v=document.getElementById('abV'),t=document.getElementById('abT');
+  function cdf(z){var x=Math.abs(z)/Math.SQRT2,tt=1/(1+0.3275911*x);var y=1-(((((1.061405429*tt-1.453152027)*tt)+1.421413741)*tt-0.284496736)*tt+0.254829592)*tt*Math.exp(-x*x);return 0.5*(1+(z<0?-y:y))}
+  function calc(){
+    var an=+el.aN.value,ac=+el.aC.value,bn=+el.bN.value,bc=+el.bC.value;
+    if(!(an>0&&bn>0)||ac<0||bc<0||ac>an||bc>bn){v.className='verdict bad';v.textContent='Check the numbers';t.textContent='Conversions cannot be more than visitors.';return}
+    var pa=ac/an,pb=bc/bn,pp=(ac+bc)/(an+bn),se=Math.sqrt(pp*(1-pp)*(1/an+1/bn));
+    var z=se?(pb-pa)/se:0,p=2*(1-cdf(Math.abs(z)));
+    var lift=pa?((pb-pa)/pa*100):0;
+    var sig=p<0.05;
+    v.className='verdict '+(sig?'ok':'bad');
+    v.textContent=sig?'Likely a real difference':'Could be chance';
+    t.textContent='A converts '+(pa*100).toFixed(2)+'%, B converts '+(pb*100).toFixed(2)+'% ('+(lift>=0?'+':'')+lift.toFixed(1)+'% relative). p = '+(p<0.001?'<0.001':p.toFixed(3))+'. '+(sig?'Below 0.05, so I would recommend B and say how sure we are.':'Above 0.05, so I would not call a winner yet. I would collect more data first.');
+  }
+  ids.forEach(function(i){el[i].addEventListener('input',calc)});calc();
+})();
+</script>
+
+</body>
+</html>
